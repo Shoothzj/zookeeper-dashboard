@@ -9,5 +9,20 @@
     <div>
       <h1>Nodes: </h1>
     </div>
+    <div>
+      <h1>Children: </h1>
+    </div>
+    <mat-table class="lessons-table mat-elevation-z8" [dataSource]="dataSource">
+
+      <ng-container matColumnDef="node">
+        <div *matHeaderCellDef>#</div>
+        <div *matCellDef="let node">{{node}}</div>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+
+      <mat-row *matRowDef="let row; columns: displayedColumns" (click)="onRowClicked(row)"></mat-row>
+
+    </mat-table>
   </mat-sidenav-content>
 </mat-sidenav-container>
