@@ -27,7 +27,8 @@ public class Main {
 
     @Bean
     RouterFunction<ServerResponse> homePageRouter() {
-        return RouterFunctions.route(RequestPredicates.GET("/"), request -> ServerResponse.ok().bodyValue(new FileSystemResource(staticPath + "index.html")));
+        return RouterFunctions.route(RequestPredicates.GET("/"),
+                request -> ServerResponse.ok().bodyValue(new FileSystemResource(staticPath + "index.html")));
     }
 
     @Bean
