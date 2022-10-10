@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class GetNodeResp {
-    private String data;
+public class SaveNodeResp {
+
 }

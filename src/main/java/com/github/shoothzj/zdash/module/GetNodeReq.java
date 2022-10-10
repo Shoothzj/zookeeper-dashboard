@@ -6,9 +6,5 @@ import lombok.Setter;
 @Setter
 @Getter
 public class GetNodeReq {
-
     private String path;
-
-    public GetNodeReq() {
-    }
 }
