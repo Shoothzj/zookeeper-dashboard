@@ -35,6 +35,7 @@ public class ZnodeController {
 
     @PostMapping("/get-nodes")
     public ResponseEntity<GetNodesResp> getNodes(@RequestBody GetNodesReq req) {
+        log.info("getNodes path [{}]", req.getPath());
         try (ZooKeeper zooKeeper = new ZooKeeper(config.addr, config.sessionTimeoutMs, null)) {
             GetNodesResp getNodeResp = new GetNodesResp();
             getNodeResp.setNodes(zooKeeper.getChildren(req.getPath(), false));
@@ -57,7 +58,8 @@ public class ZnodeController {
     }
     @PostMapping("/get-node")
     public ResponseEntity<GetNodeResp> getNode(@RequestBody GetNodeReq req,
-                                               @RequestParam("codec") String codec) {
+                                               @RequestParam(value = "codec", required = false) String codec) {
+        log.info("getNodes path [{}]", req.getPath());
         try (ZooKeeper zooKeeper = new ZooKeeper(config.addr, config.sessionTimeoutMs, null)) {
             byte[] data = zooKeeper.getData(req.getPath(), false, new Stat());
             GetNodeResp dataResp = new GetNodeResp();

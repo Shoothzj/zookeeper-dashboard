@@ -1,13 +1,19 @@
 <mat-sidenav-container class="example-container">
   <mat-sidenav mode="side" opened>
-    <button mat-raised-button color="primary">Home Page</button>
+    <button mat-raised-button color="primary" (click)="homePageClicked()">Home Page</button>
   </mat-sidenav>
   <mat-sidenav-content>
     <mat-toolbar color="primary">
-      <span>My Application</span>
+      <span>ZooKeeper dashboard</span>
     </mat-toolbar>
     <div>
-      <h1>Nodes: </h1>
+      <h1>Nodes: {{znodePath}}</h1>
+    </div>
+    <div>
+      <h1>Content: </h1>
+      <div *ngIf="znodeContent">
+        <pre>{{znodeContent}}</pre>
+      </div>
     </div>
     <div>
       <h1>Children: </h1>
