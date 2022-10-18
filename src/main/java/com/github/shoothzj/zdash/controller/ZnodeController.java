@@ -1,12 +1,13 @@
 package com.github.shoothzj.zdash.controller;
 
 import com.github.shoothzj.zdash.config.ZooKeeperConfig;
-import com.github.shoothzj.zdash.module.GetNodesReq;
-import com.github.shoothzj.zdash.module.GetNodesResp;
 import com.github.shoothzj.zdash.module.GetNodeReq;
 import com.github.shoothzj.zdash.module.GetNodeResp;
+import com.github.shoothzj.zdash.module.GetNodesReq;
+import com.github.shoothzj.zdash.module.GetNodesResp;
 import com.github.shoothzj.zdash.module.SaveNodeReq;
-import com.github.shoothzj.zdash.utils.Utils;
+import com.github.shoothzj.zdash.utils.DecodeUtil;
+import com.github.shoothzj.zdash.utils.HexUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
@@ -29,6 +30,7 @@ public class ZnodeController {
 
     @Autowired
     private ZooKeeperConfig config;
+
     public ZnodeController(@Autowired ZooKeeperConfig config) {
         this.config = config;
     }
@@ -56,15 +58,16 @@ public class ZnodeController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
     @PostMapping("/get-node")
     public ResponseEntity<GetNodeResp> getNode(@RequestBody GetNodeReq req,
                                                @RequestParam(value = "codec", required = false) String codec) {
-        log.info("getNodes path [{}]", req.getPath());
-        try (ZooKeeper zooKeeper = new ZooKeeper(config.addr, config.sessionTimeoutMs, null)) {
-            byte[] data = zooKeeper.getData(req.getPath(), false, new Stat());
+        log.info("getNode path [{}]", req.getPath());
+        try {
+            byte[] data = getZnodeContent(req.getPath());
             GetNodeResp dataResp = new GetNodeResp();
             if ("hex".equalsIgnoreCase(codec)) {
-                dataResp.setData(Utils.bytes2hex(data));
+                dataResp.setData(HexUtil.bytes2hex(data));
             } else {
                 dataResp.setData(new String(data, StandardCharsets.UTF_8));
             }
@@ -74,4 +77,29 @@ public class ZnodeController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/get-node-decode")
+    public ResponseEntity<GetNodeResp> getNodeDecode(@RequestBody GetNodeReq req,
+                                                     @RequestParam(value = "decodeComponent", required = false)
+                                                     String component,
+                                                     @RequestParam(value = "decodeNamespace", required = false)
+                                                     String namespace) {
+        log.info("decode node path [{}]", req.getPath());
+        try {
+            byte[] data = getZnodeContent(req.getPath());
+            GetNodeResp dataResp = new GetNodeResp();
+            dataResp.setData(DecodeUtil.decodeData(data, component, namespace));
+            return new ResponseEntity<>(dataResp, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("get node fail. err: ", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private byte[] getZnodeContent(String path) throws Exception {
+        try (ZooKeeper zooKeeper = new ZooKeeper(config.addr, config.sessionTimeoutMs, null)) {
+            return zooKeeper.getData(path, false, new Stat());
+        }
+    }
+
 }

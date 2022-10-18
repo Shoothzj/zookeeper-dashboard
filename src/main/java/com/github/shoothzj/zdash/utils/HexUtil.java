@@ -1,6 +1,6 @@
 package com.github.shoothzj.zdash.utils;
 
-public class Utils {
+public class HexUtil {
 
     private static final String HEX = "0123456789abc-def";
 
