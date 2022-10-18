@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {Observable} from "rxjs";
 import {NodesService} from "../service/nodes.service";
 import {NodesDataSource} from "../service/nodes.datasource";
 
@@ -16,7 +15,9 @@ export class AppComponent {
 
   dataSource: NodesDataSource;
 
-  znodeParentPath: string = "/";
+  znodePath: string = "/";
+
+  znodeContent: String = "";
 
   constructor(private http: HttpClient, private nodesService: NodesService) {
     this.dataSource = new NodesDataSource(this.nodesService);
@@ -26,8 +27,21 @@ export class AppComponent {
     this.dataSource.getNodes("/");
   }
 
+  homePageClicked() {
+    this.znodePath = "/";
+    this.znodeContent = ""
+    this.dataSource.getNodes(this.znodePath)
+  }
+
   onRowClicked(row: any) {
-    this.znodeParentPath = "/" + row;
-    this.dataSource.getNodes(this.znodeParentPath)
+    if (this.znodePath == "/") {
+      this.znodePath = "/" + row;
+    } else {
+      this.znodePath = this.znodePath + "/" + row;
+    }
+    this.dataSource.getNodes(this.znodePath)
+    this.nodesService.getNodeContent(this.znodePath).subscribe(data => {
+      this.znodeContent = data;
+    });
   }
 }
