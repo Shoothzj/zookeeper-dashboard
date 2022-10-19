@@ -6,7 +6,7 @@ class DecodeUtilTest {
 
     @Test
     public void testDecodePulsarManagedLedgerTopic() throws Exception {
-        byte[] data = HexUtil.hexToByteArray("0a0508da012000");
+        byte[] data = HexUtil.hexToByteArray("0a0508da01200");
         DecodeUtil.decodeData(data, "Pulsar", "ManagedLedgerTopic");
     }
 

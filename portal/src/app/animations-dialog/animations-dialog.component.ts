@@ -1,4 +1,4 @@
-import {Component, OnInit, Input, Injector, Inject} from '@angular/core';
+import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 
 @Component({
@@ -6,7 +6,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
   templateUrl: './animations-dialog.component.html',
   styleUrls: ['./animations-dialog.component.css']
 })
-export class AnimationsDialogComponent implements OnInit {
+export class AnimationsDialogComponent {
 
   znodeContent: String = "no content";
 
@@ -16,9 +16,6 @@ export class AnimationsDialogComponent implements OnInit {
     if ("" !== data) {
       this.znodeContent = data;
     }
-  }
-
-  ngOnInit(): void {
   }
 
 }
