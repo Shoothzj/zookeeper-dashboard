@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {NodesService} from "../service/nodes.service";
 import {NodesDataSource} from "../service/nodes.datasource";
@@ -10,7 +10,7 @@ import {AnimationsDialogComponent} from "./animations-dialog/animations-dialog.c
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'zookeeper-dashboard';
 
   displayedColumns = ["node"];
