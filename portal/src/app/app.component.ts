@@ -2,6 +2,8 @@ import {Component} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {NodesService} from "../service/nodes.service";
 import {NodesDataSource} from "../service/nodes.datasource";
+import {MatDialog} from "@angular/material/dialog";
+import {AnimationsDialogComponent} from "./animations-dialog/animations-dialog.component";
 
 @Component({
   selector: 'app-root',
@@ -19,7 +21,7 @@ export class AppComponent {
 
   znodeContent: String = "";
 
-  constructor(private http: HttpClient, private nodesService: NodesService) {
+  constructor(private http: HttpClient, private nodesService: NodesService, public dialog: MatDialog) {
     this.dataSource = new NodesDataSource(this.nodesService);
   }
 
@@ -42,6 +44,17 @@ export class AppComponent {
     this.dataSource.getNodes(this.znodePath)
     this.nodesService.getNodeContent(this.znodePath).subscribe(data => {
       this.znodeContent = data;
+    });
+  }
+
+  openDialog(enterAnimationDuration: string, exitAnimationDuration: string): void {
+    this.nodesService.getNodeHexContent(this.znodePath).subscribe(data => {
+      this.dialog.open(AnimationsDialogComponent, {
+        width: '1000px',
+        enterAnimationDuration,
+        exitAnimationDuration,
+        data: data
+      });
     });
   }
 }
