@@ -9,16 +9,43 @@
     <div>
       <h1>Nodes: {{znodePath}}</h1>
     </div>
+    <button mat-raised-button
+            (click)="openDialog('0ms', '0ms')"
+            style="background-color: forestgreen; height: 50px">show znodePath hex content</button>
     <div>
       <h1>Content: </h1>
       <div *ngIf="znodeContent">
         <pre>{{znodeContent}}</pre>
       </div>
+      <div>
+        <mat-form-field appearance="fill">
+          <mat-label>Select an decode component</mat-label>
+          <mat-select [(value)]="decodeComponent">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let item of supportDecodeComponents" [value]="item">{{item}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" style="margin-left: 1%">
+          <mat-label>Select an decode component</mat-label>
+          <mat-select [(value)]="decodeNamespace">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let item of supportDecodeNamespaces" [value]="item">{{item}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-raised-button
+                (click)="onDecodeClicked()"
+                style="height: 50px;
+                margin-left: 1%;
+                background-color: forestgreen">decode</button>
+      </div>
+      <div *ngIf="DecodeContent">
+        <h1>Decode Content: </h1>
+        <pre>{{DecodeContent}}</pre>
+      </div>
     </div>
     <div>
       <h1>Children: </h1>
     </div>
-    <button mat-raised-button (click)="openDialog('0ms', '0ms')">show hex content</button>
     <mat-table class="lessons-table mat-elevation-z8" [dataSource]="dataSource">
       <ng-container matColumnDef="node">
         <div *matHeaderCellDef>#</div>
