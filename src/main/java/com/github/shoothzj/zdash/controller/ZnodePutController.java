@@ -25,7 +25,7 @@ public class ZnodePutController {
         log.info("put managed ledger topic req {}", req);
         try {
             byte[] data = EncodeUtil.encodePulsarManagedLedgerTopic(req.getManagedLedgerTopicReq());
-            zkService.putZnodeContent(req.getPath(), data);
+            zkService.putZnodeContent(req.getPath(), data, false);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             log.error("put managed ledger topic fail. err: ", e);

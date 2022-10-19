@@ -1,6 +1,5 @@
 package com.github.shoothzj.zdash.controller;
 
-import com.github.shoothzj.zdash.config.ZooKeeperConfig;
 import com.github.shoothzj.zdash.module.GetNodeReq;
 import com.github.shoothzj.zdash.module.GetNodeResp;
 import com.github.shoothzj.zdash.module.GetNodesReq;
@@ -10,7 +9,6 @@ import com.github.shoothzj.zdash.service.ZkService;
 import com.github.shoothzj.zdash.utils.DecodeUtil;
 import com.github.shoothzj.zdash.utils.HexUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.zookeeper.ZooKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,17 +27,14 @@ import java.nio.charset.StandardCharsets;
 public class ZnodeController {
 
     @Autowired
-    private ZooKeeperConfig config;
-
-    @Autowired
     private ZkService zkService;
 
     @PostMapping("/get-nodes")
     public ResponseEntity<GetNodesResp> getNodes(@RequestBody GetNodesReq req) {
         log.info("getNodes path [{}]", req.getPath());
-        try (ZooKeeper zooKeeper = new ZooKeeper(config.addr, config.sessionTimeoutMs, null)) {
+        try {
             GetNodesResp getNodeResp = new GetNodesResp();
-            getNodeResp.setNodes(zooKeeper.getChildren(req.getPath(), false));
+            getNodeResp.setNodes(zkService.getChildren(req.getPath()));
             return new ResponseEntity<>(getNodeResp, HttpStatus.OK);
         } catch (Exception e) {
             log.error("get nodes fail. err: ", e);
@@ -49,8 +44,9 @@ public class ZnodeController {
 
     @PutMapping("/nodes")
     public ResponseEntity<Void> saveData(@RequestBody SaveNodeReq saveNodeReq) {
-        try (ZooKeeper zooKeeper = new ZooKeeper(config.addr, config.sessionTimeoutMs, null)) {
-            zooKeeper.setData(saveNodeReq.getPath(), saveNodeReq.getValue().getBytes(StandardCharsets.UTF_8), 1);
+        try {
+            zkService.putZnodeContent(saveNodeReq.getPath(),
+                    saveNodeReq.getValue().getBytes(StandardCharsets.UTF_8), true);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             log.error("save nodes fail. err: ", e);
