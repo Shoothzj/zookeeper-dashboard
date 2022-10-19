@@ -8,4 +8,4 @@ WORKDIR /opt/zookeeper-dashboard
 
 EXPOSE 10002
 
-CMD ["/usr/bin/dumb-init", "java", "-jar", "/opt/zookeeper-dashboard/zookeeper-dashboard"]
+CMD ["/usr/bin/dumb-init", "java", "-jar", "/opt/zookeeper-dashboard/zookeeper-dashboard.jar"]

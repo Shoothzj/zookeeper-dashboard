@@ -26,7 +26,7 @@
           </mat-select>
         </mat-form-field>
         <mat-form-field appearance="fill" style="margin-left: 1%">
-          <mat-label>Select an decode component</mat-label>
+          <mat-label>Select an decode namespace</mat-label>
           <mat-select [(value)]="decodeNamespace">
             <mat-option>None</mat-option>
             <mat-option *ngFor="let item of supportDecodeNamespaces" [value]="item">{{item}}</mat-option>
