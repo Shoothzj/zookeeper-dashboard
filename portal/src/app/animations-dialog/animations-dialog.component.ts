@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, Input, Injector, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-animations-dialog',
@@ -7,7 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AnimationsDialogComponent implements OnInit {
 
-  constructor() { }
+  znodeContent: String = "no content";
+
+  constructor(
+    public dialogRef: MatDialogRef<AnimationsDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) data: String) {
+    if ("" !== data) {
+      this.znodeContent = data;
+    }
+  }
 
   ngOnInit(): void {
   }

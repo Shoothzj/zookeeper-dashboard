@@ -2,7 +2,7 @@ package com.github.shoothzj.zdash.utils;
 
 public class HexUtil {
 
-    private static final String HEX = "0123456789abc-def";
+    private static final String HEX = "0123456789abcdef";
 
     public static String bytes2hex(byte[] bytes) {
         StringBuilder sb = new StringBuilder(bytes.length * 2);
