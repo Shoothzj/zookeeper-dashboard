@@ -19,7 +19,17 @@ export class AppComponent implements OnInit {
 
   znodePath: string = "/";
 
-  znodeContent: String = "";
+  znodeContent: String = "no content.";
+
+  DecodeContent: String = "";
+
+  decodeComponent = 'None';
+
+  decodeNamespace = 'None';
+
+  supportDecodeComponents: String[] = [];
+
+  supportDecodeNamespaces: String[] = [];
 
   constructor(private http: HttpClient, private nodesService: NodesService, public dialog: MatDialog) {
     this.dataSource = new NodesDataSource(this.nodesService);
@@ -27,6 +37,10 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.dataSource.getNodes("/");
+    this.nodesService.getDecodeComponents()
+      .pipe().subscribe((data: String[]) => this.supportDecodeComponents = data);
+    this.nodesService.getDecodeNamespaces()
+      .pipe().subscribe((data: String[]) => this.supportDecodeNamespaces = data);
   }
 
   homePageClicked() {
@@ -45,6 +59,12 @@ export class AppComponent implements OnInit {
     this.nodesService.getNodeContent(this.znodePath).subscribe(data => {
       this.znodeContent = data;
     });
+  }
+
+  onDecodeClicked() {
+    this.nodesService.getNodeDecodeContent(this.znodePath, this.decodeComponent, this.decodeNamespace).subscribe(data => {
+      this.DecodeContent = data;
+    })
   }
 
   openDialog(enterAnimationDuration: string, exitAnimationDuration: string): void {
