@@ -9,10 +9,13 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatTableModule} from "@angular/material/table";
 import {HttpClientModule} from "@angular/common/http";
+import { AnimationsDialogComponent } from './animations-dialog/animations-dialog.component';
+import {MatDialogModule} from "@angular/material/dialog";
 
 @NgModule({
   declarations: [
     AppComponent,
+    AnimationsDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -22,7 +25,8 @@ import {HttpClientModule} from "@angular/common/http";
     MatSidenavModule,
     MatButtonModule,
     MatToolbarModule,
-    MatTableModule
+    MatTableModule,
+    MatDialogModule
   ],
   providers: [],
   bootstrap: [AppComponent]

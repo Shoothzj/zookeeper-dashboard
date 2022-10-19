@@ -21,4 +21,10 @@ export class NodesService {
       path: path
     }).pipe(map(resp => resp.data));
   }
+
+  getNodeHexContent(path: String): Observable<String> {
+    return this.http.post<GetNodeResp>(BACKEND_HOST + '/api/zookeeper/get-node?codec=hex', {
+      path: path
+    }).pipe(map(resp => resp.data));
+  }
 }
