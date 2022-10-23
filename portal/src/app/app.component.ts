@@ -49,6 +49,26 @@ export class AppComponent implements OnInit {
     this.dataSource.getNodes(this.znodePath)
   }
 
+  previousNodeClicked() {
+    let curNodePath = this.znodePath;
+    let nodes = curNodePath.split("/");
+    if ((nodes && nodes.length == 0) || !nodes) {
+      return;
+    }
+    nodes.pop();
+    let toPath = nodes.join("/");
+    if (toPath.trim() === "") {
+      this.znodePath = "/";
+    } else {
+      this.znodePath = toPath;
+    }
+    this.znodeContent = "no content.";
+    this.dataSource.getNodes(this.znodePath);
+    this.nodesService.getNodeContent(this.znodePath).subscribe(data => {
+      this.znodeContent = data;
+    });
+  }
+
   onRowClicked(row: any) {
     if (this.znodePath == "/") {
       this.znodePath = "/" + row;
