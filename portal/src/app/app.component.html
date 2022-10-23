@@ -45,6 +45,9 @@
     </div>
     <div>
       <h1>Children: </h1>
+      <button mat-raised-button style="height: 50px; background-color: forestgreen" (click)="previousNodeClicked()">
+        Previous Node
+      </button>
     </div>
     <mat-table class="lessons-table mat-elevation-z8" [dataSource]="dataSource">
       <ng-container matColumnDef="node">
