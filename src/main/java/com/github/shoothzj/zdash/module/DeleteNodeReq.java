@@ -19,10 +19,17 @@
 
 package com.github.shoothzj.zdash.module;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Setter
+@Getter
 public class DeleteNodeReq {
+
     private String path;
+
     private int version;
+
+    public DeleteNodeReq() {
+    }
 }

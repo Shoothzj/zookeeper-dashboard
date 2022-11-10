@@ -84,7 +84,7 @@ public class ZnodeController {
     @PostMapping("/nodes/delete-node")
     public ResponseEntity<Void> deleteNode(@RequestBody DeleteNodeReq req) throws Exception {
         zkService.deleteNode(req);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping("/get-node")
