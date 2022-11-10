@@ -17,19 +17,12 @@
  * under the License.
  */
 
-package com.github.shoothzj.zdash.module.pulsar;
+package com.github.shoothzj.zdash.module;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Setter
-@Getter
-public class PutManagedLedgerTopicReq {
-
+@Data
+public class DeleteNodeReq {
     private String path;
-
-    private ManagedLedgerTopicReq managedLedgerTopicReq;
-
-    public PutManagedLedgerTopicReq() {
-    }
+    private int version;
 }
