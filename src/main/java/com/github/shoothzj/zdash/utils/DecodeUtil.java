@@ -43,7 +43,7 @@ public class DecodeUtil {
         switch (decodeNamespace) {
             case ManagedLedgerTopic:
                 return decodePulsarManagedLedgerTopicData(data);
-            case ManagedManagedLedgerSubscription:
+            case ManagedLedgerSubscription:
                 return decodePulsarManagedLedgerSubscriptionData(data);
             default:
                 return new String(data, StandardCharsets.UTF_8);

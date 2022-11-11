@@ -23,6 +23,6 @@ public enum DecodeNamespace {
 
     ManagedLedgerTopic,
 
-    ManagedManagedLedgerSubscription,
+    ManagedLedgerSubscription,
 
 }

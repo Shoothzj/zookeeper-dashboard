@@ -37,7 +37,9 @@ public class Main {
 
     {
         String aux = System.getenv("STATIC_PATH");
-        if (aux.endsWith(File.separator)) {
+        if (aux == null) {
+            staticPath = "";
+        } else if (aux.endsWith(File.separator)) {
             staticPath = aux;
         } else {
             staticPath = aux + File.separator;
