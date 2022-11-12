@@ -35,7 +35,7 @@ class DecodeUtilTest {
     @Test
     public void testDecodePulsarManagedLedgerSubscription() throws Exception {
         byte[] data = HexUtil.hexToByteArray("08db0110da0118eeeeeeeeeeeeeeeeee0130e09cdd-3bd30");
-        String content = DecodeUtil.decodeData(data, "Pulsar", "ManagedManagedLedgerSubscription");
+        String content = DecodeUtil.decodeData(data, "Pulsar", "ManagedLedgerSubscription");
         log.info("content is\n{}", content);
     }
 
