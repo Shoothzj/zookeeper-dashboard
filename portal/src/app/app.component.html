@@ -26,13 +26,19 @@
   <mat-sidenav-content>
     <mat-toolbar color="primary">
       <span>ZooKeeper dashboard</span>
+      <button mat-raised-button
+              (click)="showNodeListDialog('0ms', '0ms', '/')"
+              style="background-color: darkcyan; height: 50px; margin-left: 20px">show all znodes (recursive)</button>
     </mat-toolbar>
     <div>
       <h1>Nodes: {{znodePath}}</h1>
     </div>
     <button mat-raised-button
+            (click)="showNodeListDialog('0ms', '0ms', znodePath)"
+            style="background-color: forestgreen; height: 50px; margin-left: 20px">show sub znodes (recursive)</button>
+    <button mat-raised-button
             (click)="openDialog('0ms', '0ms')"
-            style="background-color: forestgreen; height: 50px">show znodePath hex content</button>
+            style="background-color: forestgreen; height: 50px; left: 20px">show znodePath hex content</button>
     <div>
       <h1>Content: </h1>
       <div *ngIf="znodeContent">
