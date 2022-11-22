@@ -85,16 +85,23 @@ public class ZkService {
         ) {
             final Deque<String> stack = new ArrayDeque<>();
             List<String> children = zk.getChildren(rootPath, null);
-            for (String child : children) {
-                stack.push(rootPath + child);
+            if ("/".equals(rootPath)) {
+                for (String child : children) {
+                    stack.push(rootPath + child);
+                }
+            } else {
+                for (String child : children) {
+                    stack.push(rootPath + "/" + child);
+                }
             }
+
             String path = "";
             List<String> znodes = new ArrayList<>();
             while ((path = stack.pollFirst()) != null) {
                 znodes.add(path);
                 List<String> childrens = zk.getChildren(path, null);
                 for (String child : childrens) {
-                    stack.push(path  + "/" + child);
+                    stack.push(path + "/" + child);
                 }
             }
             return znodes;
