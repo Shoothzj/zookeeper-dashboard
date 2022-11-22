@@ -28,6 +28,10 @@ import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 @Service
@@ -69,9 +73,32 @@ public class ZkService {
 
     public void deleteNode(DeleteNodeReq req) throws Exception {
         try (ZooKeeper zk = new ZooKeeper(config.addr, config.sessionTimeoutMs,
-                        watchedEvent -> log.info("zk process : {}", watchedEvent))
+                watchedEvent -> log.info("zk process : {}", watchedEvent))
         ) {
             zk.delete(req.getPath(), req.getVersion());
         }
     }
+
+    public List<String> getRecursiveZnodes(String rootPath) throws Exception {
+        try (ZooKeeper zk = new ZooKeeper(config.addr, config.sessionTimeoutMs,
+                watchedEvent -> log.info("zk process : {}", watchedEvent))
+        ) {
+            final Deque<String> stack = new ArrayDeque<>();
+            List<String> children = zk.getChildren(rootPath, null);
+            for (String child : children) {
+                stack.push(rootPath + child);
+            }
+            String path = "";
+            List<String> znodes = new ArrayList<>();
+            while ((path = stack.pollFirst()) != null) {
+                znodes.add(path);
+                List<String> childrens = zk.getChildren(path, null);
+                for (String child : childrens) {
+                    stack.push(path  + "/" + child);
+                }
+            }
+            return znodes;
+        }
+    }
+
 }

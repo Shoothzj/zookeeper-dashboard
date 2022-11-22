@@ -33,11 +33,13 @@ import {MatDialogModule} from "@angular/material/dialog";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatSelectModule} from "@angular/material/select";
+import { AnimationsListDialogComponent } from './animations-list-dialog/animations-list-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AnimationsDialogComponent,
+    AnimationsListDialogComponent,
   ],
   imports: [
     BrowserModule,

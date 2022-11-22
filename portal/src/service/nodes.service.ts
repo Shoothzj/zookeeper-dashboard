@@ -32,7 +32,7 @@ export class NodesService {
   constructor(private http: HttpClient) { }
 
   getNodes(path: String): Observable<String[]> {
-    return this.http.post<GetNodesResp>(BACKEND_HOST + '/api/zookeeper/get-nodes', {
+    return this.http.post<GetNodesResp>(BACKEND_HOST + '/api/zookeeper/get-nodes?recursive=false', {
       path: path
     }).pipe(map(resp => resp.nodes));
   }
@@ -64,5 +64,11 @@ export class NodesService {
   getDecodeNamespaces(): Observable<String[]> {
     return this.http.get<SupportDecodeNamespaceListResp>(BACKEND_HOST + '/api/zookeeper/decode-namespaces')
       .pipe(map(resp => resp.supportDecodeNamespaces))
+  }
+
+  getRecursiveNodes(path: String): Observable<String[]> {
+    return this.http.post<GetNodesResp>(BACKEND_HOST + '/api/zookeeper/get-nodes?recursive=true', {
+      path: path
+    }).pipe(map(resp => resp.nodes));
   }
 }

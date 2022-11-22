@@ -17,7 +17,20 @@
  * under the License.
  */
 
-//const BACKEND_HOST = window.location.origin;
-const BACKEND_HOST = "localhost:10002";
+import {Component, Inject} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 
-export default BACKEND_HOST;
+@Component({
+  selector: 'app-animations-list-dialog',
+  templateUrl: './animations-list-dialog.component.html',
+  styleUrls: ['./animations-list-dialog.component.css']
+})
+export class AnimationsListDialogComponent {
+  znodeContent: String[] = [];
+
+  constructor(
+    public dialogRef: MatDialogRef<AnimationsListDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) data: String[]) {
+      this.znodeContent = data;
+  }
+}

@@ -57,11 +57,16 @@ public class ZnodeController {
     private ZkService zkService;
 
     @PostMapping("/get-nodes")
-    public ResponseEntity<GetNodesResp> getNodes(@RequestBody GetNodesReq req) {
+    public ResponseEntity<GetNodesResp> getNodes(@RequestBody GetNodesReq req,
+                                                 @RequestParam boolean recursive) {
         log.info("getNodes path [{}]", req.getPath());
         try {
             GetNodesResp getNodeResp = new GetNodesResp();
-            getNodeResp.setNodes(zkService.getChildren(req.getPath()));
+            if (recursive) {
+                getNodeResp.setNodes(zkService.getRecursiveZnodes(req.getPath()));
+            } else {
+                getNodeResp.setNodes(zkService.getChildren(req.getPath()));
+            }
             return new ResponseEntity<>(getNodeResp, HttpStatus.OK);
         } catch (Exception e) {
             log.error("get nodes fail. err: ", e);
