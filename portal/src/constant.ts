@@ -17,7 +17,6 @@
  * under the License.
  */
 
-//const BACKEND_HOST = window.location.origin;
-const BACKEND_HOST = "localhost:10002";
+const BACKEND_HOST = window.location.origin;
 
 export default BACKEND_HOST;
