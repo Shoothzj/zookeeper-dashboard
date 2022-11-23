@@ -107,6 +107,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>io.github.embedded-middleware</groupId>
+            <artifactId>embedded-zookeeper-core</artifactId>
+            <version>0.0.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

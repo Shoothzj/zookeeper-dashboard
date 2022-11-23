@@ -63,7 +63,7 @@ public class ZnodeController {
         try {
             GetNodesResp getNodeResp = new GetNodesResp();
             if (recursive) {
-                getNodeResp.setNodes(zkService.getRecursiveZnodes(req.getPath()));
+                getNodeResp.setNodes(zkService.getZnodesRecursive(req.getPath()));
             } else {
                 getNodeResp.setNodes(zkService.getChildren(req.getPath()));
             }

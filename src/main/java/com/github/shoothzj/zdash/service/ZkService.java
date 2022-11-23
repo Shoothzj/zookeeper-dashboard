@@ -79,7 +79,7 @@ public class ZkService {
         }
     }
 
-    public List<String> getRecursiveZnodes(String rootPath) throws Exception {
+    public List<String> getZnodesRecursive(String rootPath) throws Exception {
         try (ZooKeeper zk = new ZooKeeper(config.addr, config.sessionTimeoutMs,
                 watchedEvent -> log.info("zk process : {}", watchedEvent))
         ) {
