@@ -17,29 +17,26 @@
  * under the License.
  */
 
-package com.github.shoothzj.zdash.utils;
+package com.github.shoothzj.zdash.util;
 
 import com.github.shoothzj.zdash.module.pulsar.LedgerInfoReq;
 import com.github.shoothzj.zdash.module.pulsar.ManagedLedgerTopicReq;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.apache.bookkeeper.mledger.proto.MLDataFormats;
 
-import java.util.ArrayList;
-import java.util.Optional;
+public class EncodeUtil {
 
-class EncodeUtilTest {
-
-    @Test
-    public void testEncodePulsarManagedLedgerTopic() throws Exception {
-        ManagedLedgerTopicReq managedLedgerTopicReq = new ManagedLedgerTopicReq();
-        managedLedgerTopicReq.setLedgerInfoReqList(new ArrayList<>());
-        LedgerInfoReq ledgerInfoReq = new LedgerInfoReq();
-        ledgerInfoReq.setLedgerId(218);
-        ledgerInfoReq.setTimestamp(Optional.of(0L));
-        managedLedgerTopicReq.addLedgerInfoReq(ledgerInfoReq);
-        byte[] bytes = EncodeUtil.encodePulsarManagedLedgerTopic(managedLedgerTopicReq);
-        String hex = HexUtil.bytes2hex(bytes);
-        Assertions.assertEquals("0a0508da012000", hex);
+    public static byte[] encodePulsarManagedLedgerTopic(ManagedLedgerTopicReq req) {
+        MLDataFormats.ManagedLedgerInfo.Builder builder = MLDataFormats.ManagedLedgerInfo.newBuilder();
+        for (LedgerInfoReq ledgerInfoReq : req.getLedgerInfoReqList()) {
+            MLDataFormats.ManagedLedgerInfo.LedgerInfo.Builder ledgerInfoBuilder = MLDataFormats.
+                    ManagedLedgerInfo.LedgerInfo.newBuilder();
+            ledgerInfoBuilder.setLedgerId(ledgerInfoReq.getLedgerId());
+            if (ledgerInfoReq.getTimestamp().isPresent()) {
+                ledgerInfoBuilder.setTimestamp(ledgerInfoReq.getTimestamp().get());
+            }
+            builder.addLedgerInfo(ledgerInfoBuilder);
+        }
+        return builder.build().toByteArray();
     }
 
 }

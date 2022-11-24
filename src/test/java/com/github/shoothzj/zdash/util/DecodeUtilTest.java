@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package com.github.shoothzj.zdash.utils;
+package com.github.shoothzj.zdash.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
