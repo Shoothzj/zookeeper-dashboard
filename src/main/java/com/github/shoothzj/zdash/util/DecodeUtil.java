@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package com.github.shoothzj.zdash.utils;
+package com.github.shoothzj.zdash.util;
 
 import com.github.shoothzj.zdash.module.DecodeComponent;
 import com.github.shoothzj.zdash.module.DecodeNamespace;

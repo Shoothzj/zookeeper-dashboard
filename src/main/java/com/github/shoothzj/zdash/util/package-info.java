@@ -17,4 +17,4 @@
  * under the License.
  */
 
-package com.github.shoothzj.zdash.utils;
+package com.github.shoothzj.zdash.util;

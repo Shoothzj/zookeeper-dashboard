@@ -21,7 +21,7 @@ package com.github.shoothzj.zdash.controller;
 
 import com.github.shoothzj.zdash.module.pulsar.PutManagedLedgerTopicReq;
 import com.github.shoothzj.zdash.service.ZkService;
-import com.github.shoothzj.zdash.utils.EncodeUtil;
+import com.github.shoothzj.zdash.util.EncodeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
