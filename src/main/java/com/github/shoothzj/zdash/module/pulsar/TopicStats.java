@@ -17,29 +17,15 @@
  * under the License.
  */
 
-package com.github.shoothzj.zdash.util;
+package com.github.shoothzj.zdash.module.pulsar;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import lombok.Getter;
+import lombok.Setter;
 
-@Slf4j
-public class JacksonUtil {
+@Setter
+@Getter
+public class TopicStats {
+    private int partitions;
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-
-    static {
-        MAPPER.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-        MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
-
-    public static <T> T toObject(String json, Class<T> type) {
-        try {
-            return MAPPER.readValue(json, type);
-        } catch (Exception e) {
-            log.error("json process error, exception is ", e);
-        }
-        return null;
-    }
-
+    public TopicStats() {}
 }

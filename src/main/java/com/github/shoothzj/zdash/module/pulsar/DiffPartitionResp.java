@@ -17,29 +17,38 @@
  * under the License.
  */
 
-package com.github.shoothzj.zdash.util;
+package com.github.shoothzj.zdash.module.pulsar;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.slf4j.Slf4j;
+import lombok.Getter;
+import lombok.Setter;
 
-@Slf4j
-public class JacksonUtil {
+import java.util.List;
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
+@Setter
+@Getter
+public class DiffPartitionResp {
 
-    static {
-        MAPPER.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-        MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
+    @Setter
+    @Getter
+    public static class DiffPartition {
+        private String topic;
 
-    public static <T> T toObject(String json, Class<T> type) {
-        try {
-            return MAPPER.readValue(json, type);
-        } catch (Exception e) {
-            log.error("json process error, exception is ", e);
+        private List<String> partitions;
+
+        private String reason;
+
+        public DiffPartition() {
         }
-        return null;
+
+        public DiffPartition(String topic, List<String> partitions, String reason) {
+            this.topic = topic;
+            this.reason = reason;
+            this.partitions = partitions;
+        }
     }
 
+    List<DiffPartition> diffs;
+
+    public DiffPartitionResp() {
+    }
 }
