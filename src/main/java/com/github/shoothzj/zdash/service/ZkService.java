@@ -25,6 +25,7 @@ import com.github.shoothzj.zdash.module.pulsar.TopicStats;
 import com.github.shoothzj.zdash.util.JacksonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
+import org.apache.zookeeper.KeeperException;
 import org.apache.zookeeper.ZooDefs;
 import org.apache.zookeeper.ZooKeeper;
 import org.apache.zookeeper.data.Stat;
@@ -134,22 +135,26 @@ public class ZkService {
             String namespaceParentPath = tenantParentPath + "/" + tenant;
             List<String> namespaces = getChildren(zooKeeper, namespaceParentPath);
             for (String namespace : namespaces) {
-                String tenantAndNamespace = tenant + "_" + namespace;
-                String partitionParentPath = namespaceParentPath + "/" + namespace + "/persistent";
-                List<String> partitions = getChildren(zooKeeper, partitionParentPath);
-                for (String partition : partitions) {
-                    String[] arr = partition.split("-partition-");
-                    if (arr.length != 2) {
-                        log.warn("tenant: {}, namespace: {}, get patrition: {}", tenant, namespace, partition);
-                        continue;
+                try {
+                    String tenantAndNamespace = tenant + "_" + namespace;
+                    String partitionParentPath = namespaceParentPath + "/" + namespace + "/persistent";
+                    List<String> partitions = getChildren(zooKeeper, partitionParentPath);
+                    for (String partition : partitions) {
+                        String[] arr = partition.split("-partition-");
+                        if (arr.length != 2) {
+                            log.warn("tenant: {}, namespace: {}, get patrition: {}", tenant, namespace, partition);
+                            continue;
+                        }
+                        String topicPath = tenantAndNamespace + "_" + arr[0];
+                        List<String> partitionList = partitionStatsMap.get(topicPath);
+                        if (partitionList == null) {
+                            partitionList = new ArrayList<>();
+                        }
+                        partitionList.add(arr[1]);
+                        partitionStatsMap.put(topicPath, partitionList);
                     }
-                    String topicPath = tenantAndNamespace + "_" + arr[0];
-                    List<String> partitionList = partitionStatsMap.get(topicPath);
-                    if (partitionList == null) {
-                        partitionList = new ArrayList<>();
-                    }
-                    partitionList.add(arr[1]);
-                    partitionStatsMap.put(topicPath, partitionList);
+                } catch (KeeperException.NoNodeException e) {
+                    log.warn("tenant: {}, namespace: {}, not partition topic", tenant, namespace);
                 }
             }
         }
@@ -164,19 +169,23 @@ public class ZkService {
             String namespaceParentPath = adminTenantParentPath + "/" + tenant;
             List<String> namespaces = getChildren(zooKeeper, namespaceParentPath);
             for (String namespace : namespaces) {
-                String topicParentPath = namespaceParentPath + "/" + namespace + "/persistent";
-                List<String> topics = getChildren(zooKeeper, topicParentPath);
-                // get topic node content
-                for (String topic : topics) {
-                    String topicPath = topicParentPath + "/" + topic;
-                    byte[] rawBody = getZnodeContent(zooKeeper, topicPath);
-                    String content = new String(rawBody, StandardCharsets.UTF_8);
-                    TopicStats info = JacksonUtil.toObject(content, TopicStats.class);
-                    if (info == null) {
-                        log.warn("unmarshal admin partition-topic data failed, content: {}", content);
-                        continue;
+                try {
+                    String topicParentPath = namespaceParentPath + "/" + namespace + "/persistent";
+                    List<String> topics = getChildren(zooKeeper, topicParentPath);
+                    // get topic node content
+                    for (String topic : topics) {
+                        String topicPath = topicParentPath + "/" + topic;
+                        byte[] rawBody = getZnodeContent(zooKeeper, topicPath);
+                        String content = new String(rawBody, StandardCharsets.UTF_8);
+                        TopicStats info = JacksonUtil.toObject(content, TopicStats.class);
+                        if (info == null) {
+                            log.warn("unmarshal admin partition-topic data failed, content: {}", content);
+                            continue;
+                        }
+                        partitionStat.put(tenant + "_" + namespace + "_" + topic, info.getPartitions());
                     }
-                    partitionStat.put(tenant + "_" + namespace + "_" + topic, info.getPartitions());
+                } catch (KeeperException.NoNodeException e) {
+                    log.warn("tenant: {}, namespace: {}, not partition topic", tenant, namespace);
                 }
             }
         }
