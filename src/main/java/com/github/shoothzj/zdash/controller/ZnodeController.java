@@ -29,10 +29,12 @@ import com.github.shoothzj.zdash.module.GetNodesReq;
 import com.github.shoothzj.zdash.module.GetNodesResp;
 import com.github.shoothzj.zdash.module.SaveNodeReq;
 import com.github.shoothzj.zdash.module.SupportDecodeNamespaceListResp;
+import com.github.shoothzj.zdash.module.pulsar.DiffPartitionResp;
 import com.github.shoothzj.zdash.service.ZkService;
 import com.github.shoothzj.zdash.util.DecodeUtil;
 import com.github.shoothzj.zdash.util.HexUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.zookeeper.ZooKeeper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +48,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -149,6 +153,38 @@ public class ZnodeController {
         SupportDecodeNamespaceListResp namespaceListResp = new SupportDecodeNamespaceListResp();
         namespaceListResp.setSupportDecodeNamespaces(decodeNamespaces);
         return new ResponseEntity<>(namespaceListResp, HttpStatus.OK);
+    }
+
+    @PostMapping("/check-pulsar-partition-topic-metadata")
+    public ResponseEntity<DiffPartitionResp> checkPulsarPartitionTopicMetadata() throws Exception {
+        DiffPartitionResp diffPartitionResp = new DiffPartitionResp();
+        List<DiffPartitionResp.DiffPartition> diffPartition = new ArrayList<>();
+        try (ZooKeeper zooKeeper = zkService.newZookeeper()) {
+            // get all topic from managed-ledgers node, save to map, key tenant_namespace_topic, value partition size
+            HashMap<String, List<String>> partitionStatsMap = zkService.getManagedLedgerTopics(zooKeeper);
+
+            // get all topic from /admin/partitioned-topics node, save to map
+            HashMap<String, Integer> partitionStat = zkService.getAdminPartitionTopics(zooKeeper);
+
+            // diff topic
+            for (Map.Entry<String, List<String>> entry : partitionStatsMap.entrySet()) {
+                String ledgerTopic = entry.getKey();
+                int ledgerPartitionSize = entry.getValue().size();
+                Integer adminPartitionSize = partitionStat.get(ledgerTopic);
+                if (ledgerPartitionSize != adminPartitionSize) {
+                    String reason = String.format("admin partition topic size: %s, managed-ledger topic size: %s",
+                            adminPartitionSize, ledgerPartitionSize);
+                    List<String> partitions = new ArrayList<>();
+                    for (String p : entry.getValue()) {
+                        partitions.add(ledgerTopic + "-partition-" + p);
+                    }
+                    diffPartition.add(new DiffPartitionResp.DiffPartition(ledgerTopic, partitions, reason));
+                }
+            }
+            diffPartitionResp.setDiffs(diffPartition);
+        }
+
+        return new ResponseEntity<>(diffPartitionResp, HttpStatus.OK);
     }
 
 }

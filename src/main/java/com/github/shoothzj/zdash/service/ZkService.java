@@ -21,6 +21,8 @@ package com.github.shoothzj.zdash.service;
 
 import com.github.shoothzj.zdash.config.ZooKeeperConfig;
 import com.github.shoothzj.zdash.module.DeleteNodeReq;
+import com.github.shoothzj.zdash.module.pulsar.TopicStats;
+import com.github.shoothzj.zdash.util.JacksonUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.zookeeper.CreateMode;
 import org.apache.zookeeper.ZooDefs;
@@ -29,9 +31,12 @@ import org.apache.zookeeper.data.Stat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -42,7 +47,10 @@ public class ZkService {
 
     public ZkService(@Autowired ZooKeeperConfig config) {
         this.config = config;
+    }
 
+    public ZooKeeper newZookeeper() throws IOException {
+        return new ZooKeeper(config.addr, config.sessionTimeoutMs, null);
     }
 
     public void putZnodeContent(String path, byte[] content, boolean createIfNotExists) throws Exception {
@@ -65,10 +73,18 @@ public class ZkService {
         }
     }
 
+    public byte[] getZnodeContent(ZooKeeper zooKeeper, String path) throws Exception {
+        return zooKeeper.getData(path, false, new Stat());
+    }
+
     public List<String> getChildren(String path) throws Exception {
         try (ZooKeeper zooKeeper = new ZooKeeper(config.addr, config.sessionTimeoutMs, null)) {
             return zooKeeper.getChildren(path, false);
         }
+    }
+
+    public List<String> getChildren(ZooKeeper zooKeeper, String path) throws Exception {
+        return zooKeeper.getChildren(path, false);
     }
 
     public void deleteNode(DeleteNodeReq req) throws Exception {
@@ -108,4 +124,62 @@ public class ZkService {
         }
     }
 
+
+    public HashMap<String, List<String>> getManagedLedgerTopics(ZooKeeper zooKeeper) throws Exception {
+        final String tenantParentPath = "/managed-ledgers";
+        List<String> tenants = getChildren(zooKeeper, tenantParentPath);
+        // key: tenant_namespace_topic: value: partition collection
+        HashMap<String, List<String>> partitionStatsMap = new HashMap<>();
+        for (String tenant : tenants) {
+            String namespaceParentPath = tenantParentPath + "/" + tenant;
+            List<String> namespaces = getChildren(zooKeeper, namespaceParentPath);
+            for (String namespace : namespaces) {
+                String tenantAndNamespace = tenant + "_" + namespace;
+                String partitionParentPath = namespaceParentPath + "/" + namespace + "/persistent";
+                List<String> partitions = getChildren(zooKeeper, partitionParentPath);
+                for (String partition : partitions) {
+                    String[] arr = partition.split("-partition-");
+                    if (arr.length != 2) {
+                        log.warn("tenant: {}, namespace: {}, get patrition: {}", tenant, namespace, partition);
+                        continue;
+                    }
+                    String topicPath = tenantAndNamespace + "_" + arr[0];
+                    List<String> partitionList = partitionStatsMap.get(topicPath);
+                    if (partitionList == null) {
+                        partitionList = new ArrayList<>();
+                    }
+                    partitionList.add(arr[1]);
+                    partitionStatsMap.put(topicPath, partitionList);
+                }
+            }
+        }
+        return partitionStatsMap;
+    }
+
+    public HashMap<String, Integer> getAdminPartitionTopics(ZooKeeper zooKeeper) throws Exception {
+        final String adminTenantParentPath = "/admin/partitioned-topics";
+        List<String> adminTenants = getChildren(zooKeeper, adminTenantParentPath);
+        HashMap<String, Integer> partitionStat = new HashMap<>();
+        for (String tenant : adminTenants) {
+            String namespaceParentPath = adminTenantParentPath + "/" + tenant;
+            List<String> namespaces = getChildren(zooKeeper, namespaceParentPath);
+            for (String namespace : namespaces) {
+                String topicParentPath = namespaceParentPath + "/" + namespace + "/persistent";
+                List<String> topics = getChildren(zooKeeper, topicParentPath);
+                // get topic node content
+                for (String topic : topics) {
+                    String topicPath = topicParentPath + "/" + topic;
+                    byte[] rawBody = getZnodeContent(zooKeeper, topicPath);
+                    String content = new String(rawBody, StandardCharsets.UTF_8);
+                    TopicStats info = JacksonUtil.toObject(content, TopicStats.class);
+                    if (info == null) {
+                        log.warn("unmarshal admin partition-topic data failed, content: {}", content);
+                        continue;
+                    }
+                    partitionStat.put(tenant + "_" + namespace + "_" + topic, info.getPartitions());
+                }
+            }
+        }
+        return partitionStat;
+    }
 }
