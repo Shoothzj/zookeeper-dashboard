@@ -24,6 +24,7 @@ import {NodesDataSource} from "../service/nodes.datasource";
 import {MatDialog} from "@angular/material/dialog";
 import {AnimationsDialogComponent} from "./animations-dialog/animations-dialog.component";
 import {AnimationsListDialogComponent} from "./animations-list-dialog/animations-list-dialog.component";
+import {AnimationsDiffPartitionTopicListDialogComponent} from "./animations-diff-partition-topic-list-dialog/animations-diff-partition-topic-list-dialog.component";
 
 @Component({
   selector: 'app-root',
@@ -110,6 +111,17 @@ export class AppComponent implements OnInit {
   openDialog(enterAnimationDuration: string, exitAnimationDuration: string): void {
     this.nodesService.getNodeHexContent(this.znodePath).subscribe(data => {
       this.dialog.open(AnimationsDialogComponent, {
+        width: '1000px',
+        enterAnimationDuration,
+        exitAnimationDuration,
+        data: data
+      });
+    });
+  }
+
+  checkPulsarPartitionTopicMetadataDialog(enterAnimationDuration: string, exitAnimationDuration: string): void {
+    this.nodesService.checkPulsarPartitionTopicMetadata().subscribe(data => {
+      this.dialog.open(AnimationsDiffPartitionTopicListDialogComponent, {
         width: '1000px',
         enterAnimationDuration,
         exitAnimationDuration,

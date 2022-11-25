@@ -25,6 +25,7 @@ import {Injectable} from "@angular/core";
 import GetNodeResp from "../module/GetNodeResp";
 import SupportDecodeComponentListResp from "../module/SupportDecodeComponentListResp";
 import SupportDecodeNamespaceListResp from "../module/SupportDecodeNamespaceListResp";
+import DiffPartitionTopicsResp, {DiffPartitionTopic} from "../module/DiffPartitionTopicsResp";
 
 @Injectable({providedIn: "root"})
 export class NodesService {
@@ -70,5 +71,11 @@ export class NodesService {
     return this.http.post<GetNodesResp>(BACKEND_HOST + '/api/zookeeper/get-nodes?recursive=true', {
       path: path
     }).pipe(map(resp => resp.nodes));
+  }
+
+  checkPulsarPartitionTopicMetadata(): Observable<DiffPartitionTopic[]> {
+    return this.http.post<DiffPartitionTopicsResp>(BACKEND_HOST +
+      '/api/zookeeper/check-pulsar-partition-topic-metadata', {})
+      .pipe(map(resp => resp.diffs))
   }
 }

@@ -34,12 +34,17 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatSelectModule} from "@angular/material/select";
 import { AnimationsListDialogComponent } from './animations-list-dialog/animations-list-dialog.component';
+import {
+  AnimationsDiffPartitionTopicListDialogComponent
+} from "./animations-diff-partition-topic-list-dialog/animations-diff-partition-topic-list-dialog.component";
+import {MatCardModule} from "@angular/material/card";
 
 @NgModule({
   declarations: [
     AppComponent,
     AnimationsDialogComponent,
     AnimationsListDialogComponent,
+    AnimationsDiffPartitionTopicListDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -53,7 +58,8 @@ import { AnimationsListDialogComponent } from './animations-list-dialog/animatio
     MatDialogModule,
     MatFormFieldModule,
     MatAutocompleteModule,
-    MatSelectModule
+    MatSelectModule,
+    MatCardModule
   ],
   providers: [],
   bootstrap: [AppComponent]
