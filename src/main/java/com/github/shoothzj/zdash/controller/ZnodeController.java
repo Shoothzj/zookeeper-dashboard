@@ -171,8 +171,20 @@ public class ZnodeController {
                 String ledgerTopic = entry.getKey();
                 int ledgerPartitionSize = entry.getValue().size();
                 Integer adminPartitionSize = partitionStat.get(ledgerTopic);
+                if (adminPartitionSize == null) {
+                    log.warn("different topic: {}", ledgerTopic);
+                    String reason = String.format("admin partition topic size: 0, managed-ledger topic size: %d",
+                            ledgerPartitionSize);
+                    List<String> partitions = new ArrayList<>();
+                    for (String p : entry.getValue()) {
+                        partitions.add(ledgerTopic + "-partition-" + p);
+                    }
+                    diffPartition.add(new DiffPartitionResp.DiffPartition(ledgerTopic, partitions, reason));
+                    continue;
+                }
                 if (ledgerPartitionSize != adminPartitionSize) {
-                    String reason = String.format("admin partition topic size: %s, managed-ledger topic size: %s",
+                    log.warn("different topic: {}", ledgerTopic);
+                    String reason = String.format("admin partition topic size: %d, managed-ledger topic size: %d",
                             adminPartitionSize, ledgerPartitionSize);
                     List<String> partitions = new ArrayList<>();
                     for (String p : entry.getValue()) {

@@ -83,6 +83,9 @@ class ZkServiceTest {
         Assertions.assertEquals(1, partition1);
         Integer partition2 = partitionStat.get("public_default_topic2");
         Assertions.assertEquals(3, partition2);
+
+        Integer noExistPartition = partitionStat.get("public_default_no_exist");
+        Assertions.assertNull(noExistPartition);
     }
 
 }
